@@ -1,5 +1,6 @@
 import threading
 import time
+from notification import show_notification
 
 class Reminder:
     def __init__(self, interval_minutes=30):
@@ -16,4 +17,4 @@ class Reminder:
     def _run(self):
         while self.running:
             time.sleep(self.interval)
-            print("💧 Time to drink water!")
+            show_notification()

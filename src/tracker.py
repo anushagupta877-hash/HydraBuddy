@@ -25,3 +25,16 @@ class WaterTracker:
     def save(self):
         with open(self.filename, "w") as file:
             json.dump({"glasses": self.glasses}, file)
+
+
+# Global tracker object
+tracker = WaterTracker()
+
+def drink_water():
+    tracker.add_glass()
+
+def get_water_count():
+    return tracker.get_count()
+
+def reset_water_count():
+    tracker.reset()

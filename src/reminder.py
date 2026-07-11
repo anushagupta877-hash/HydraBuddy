@@ -18,3 +18,11 @@ class Reminder:
         while self.running:
             time.sleep(self.interval)
             show_notification()
+            # Global reminder object
+reminder = Reminder(interval_minutes=30)
+
+def start_reminder():
+    reminder.start()
+
+def stop_reminder():
+    reminder.stop()

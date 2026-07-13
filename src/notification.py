@@ -7,4 +7,3 @@ def show_notification():
         app_name="HydraBuddy",
         timeout=10
     )
-    

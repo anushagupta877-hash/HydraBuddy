@@ -1,7 +1,6 @@
 import threading
 import time
-from notification import show_notification
-
+from gui import show_reminder
 class Reminder:
     def __init__(self, interval_minutes=0.05):
         self.interval = interval_minutes * 60
@@ -17,9 +16,9 @@ class Reminder:
     def _run(self):
         while self.running:
             time.sleep(self.interval)
-            show_notification()
+            show_reminder()
             # Global reminder object
-reminder = Reminder(interval_minutes=30)
+reminder = Reminder(interval_minutes=0.05)
 
 def start_reminder():
     reminder.start()

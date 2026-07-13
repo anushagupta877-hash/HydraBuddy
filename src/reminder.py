@@ -3,7 +3,7 @@ import time
 from notification import show_notification
 
 class Reminder:
-    def __init__(self, interval_minutes=30):
+    def __init__(self, interval_minutes=0.05):
         self.interval = interval_minutes * 60
         self.running = False
 

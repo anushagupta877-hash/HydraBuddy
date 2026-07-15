@@ -19,7 +19,7 @@ class Reminder:
             time.sleep(self.interval)
             show_notification()
             # Global reminder object
-reminder = Reminder(interval_minutes=30)
+reminder = Reminder(interval_minutes=0.05)
 
 def start_reminder():
     reminder.start()

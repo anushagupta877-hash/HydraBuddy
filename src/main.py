@@ -7,3 +7,5 @@ print("HydraBuddy is Running...")
 
 while True:
     time.sleep(1)
+
+    

@@ -2,18 +2,22 @@ import tkinter as tk
 from PIL import Image, ImageTk
 import os
 
-from tracker import drink_water
+from tracker import drink_water, get_water_count
 
 
 def show_reminder():
 
     root = tk.Tk()
     root.title("HydraBuddy 💧")
-    root.geometry("600x500")
+    root.geometry("430x540")
     root.configure(bg="#EAF8FF")
     root.resizable(False, False)
 
-    # ---------- Title ----------
+    goal = 8
+    current = get_water_count()
+    progress = min(current / goal, 1)
+
+    # ---------------- TITLE ---------------- #
 
     tk.Label(
         root,
@@ -21,76 +25,109 @@ def show_reminder():
         font=("Segoe UI", 24, "bold"),
         bg="#EAF8FF",
         fg="#0077B6"
-    ).pack(pady=15)
+    ).pack(pady=(20, 5))
 
     tk.Label(
         root,
-        text="Time to drink water!",
-        font=("Segoe UI", 14),
+        text="Stay Hydrated 💙",
+        font=("Segoe UI", 13),
         bg="#EAF8FF",
-        fg="#555555"
+        fg="#666666"
     ).pack()
 
-    # ---------- Load Image ----------
+    # ---------------- PROGRESS ---------------- #
+
+    tk.Label(
+        root,
+        text=f"Today's Progress: {current}/{goal} glasses",
+        font=("Segoe UI", 11, "bold"),
+        bg="#EAF8FF",
+        fg="#0077B6"
+    ).pack(pady=(18, 5))
+
+    canvas = tk.Canvas(
+        root,
+        width=260,
+        height=18,
+        bg="#EAF8FF",
+        highlightthickness=0
+    )
+
+    canvas.pack()
+
+    canvas.create_rectangle(
+        0,
+        0,
+        260,
+        18,
+        fill="#D9D9D9",
+        outline=""
+    )
+
+    canvas.create_rectangle(
+        0,
+        0,
+        260 * progress,
+        18,
+        fill="#4CAF50",
+        outline=""
+    )
+
+    # ---------------- CAT IMAGE ---------------- #
 
     current_dir = os.path.dirname(__file__)
     image_path = os.path.join(current_dir, "..", "assets", "cat.png")
 
     image = Image.open(image_path)
-    image = image.resize((180, 180))
+    image = image.resize((150, 150))
 
     cat_image = ImageTk.PhotoImage(image)
 
-    cat_label = tk.Label(root, image=cat_image, bg="#EAF8FF")
+    cat_label = tk.Label(
+        root,
+        image=cat_image,
+        bg="#EAF8FF"
+    )
 
-    # Start outside the window
-    x = -200
-    y = 90
+    cat_label.pack(pady=18)
 
-    cat_label.place(x=x, y=y)
-
-    # ---------- Animation ----------
-
-    def animate():
-
-        nonlocal x
-
-        if x < 210:
-            x += 5
-            cat_label.place(x=x, y=y)
-            root.after(20, animate)
-
-    animate()
-
-    # ---------- Message ----------
+    # ---------------- MESSAGE ---------------- #
 
     message = tk.Label(
         root,
-        text="💧 Drink one glass of water!",
-        font=("Segoe UI", 15, "bold"),
+        text="💧 It's time for your next glass of water!",
+        font=("Segoe UI", 13, "bold"),
         bg="#EAF8FF",
-        fg="#333333"
+        fg="#333333",
+        wraplength=330,
+        justify="center"
     )
 
-    message.pack(pady=(210, 20))
+    message.pack(pady=10)
 
-    # ---------- Button Functions ----------
+    # ---------------- BUTTON FUNCTIONS ---------------- #
 
     def drank():
 
         drink_water()
 
-        message.config(text="🎉 Great job! Stay hydrated.")
+        new_count = get_water_count()
 
-        root.after(1200, root.destroy)
+        message.config(
+            text=f"🎉 Great Job!\nYou've completed {new_count}/{goal} glasses today."
+        )
+
+        root.after(1500, root.destroy)
 
     def later():
 
-        message.config(text="😊 Okay! I'll remind you later.")
+        message.config(
+            text="⏰ No worries!\nI'll remind you again later."
+        )
 
-        root.after(1200, root.destroy)
+        root.after(1500, root.destroy)
 
-    # ---------- Buttons ----------
+    # ---------------- BUTTONS ---------------- #
 
     drink_btn = tk.Button(
         root,
@@ -98,12 +135,16 @@ def show_reminder():
         command=drank,
         bg="#4CAF50",
         fg="white",
-        font=("Segoe UI", 12, "bold"),
-        padx=20,
-        pady=10
+        activebackground="#43A047",
+        activeforeground="white",
+        font=("Segoe UI", 11, "bold"),
+        width=22,
+        height=2,
+        relief="flat",
+        cursor="hand2"
     )
 
-    drink_btn.pack(pady=8)
+    drink_btn.pack(pady=(15, 8))
 
     later_btn = tk.Button(
         root,
@@ -111,17 +152,22 @@ def show_reminder():
         command=later,
         bg="#FFB703",
         fg="black",
-        font=("Segoe UI", 12, "bold"),
-        padx=20,
-        pady=10
+        activebackground="#F4A300",
+        font=("Segoe UI", 11, "bold"),
+        width=22,
+        height=2,
+        relief="flat",
+        cursor="hand2"
     )
 
     later_btn.pack()
 
+    # ---------------- FOOTER ---------------- #
+
     tk.Label(
         root,
-        text="Made with ❤️ by Anusha & Aanya",
-        font=("Segoe UI", 10),
+        text="Made with ❤️ by Team HydraBuddy\nAnusha & Aanya",
+        font=("Segoe UI", 9),
         bg="#EAF8FF",
         fg="gray"
     ).pack(side="bottom", pady=15)
@@ -129,6 +175,5 @@ def show_reminder():
     root.mainloop()
 
 
-# For testing only
 if __name__ == "__main__":
     show_reminder()

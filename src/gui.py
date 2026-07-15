@@ -146,13 +146,30 @@ def show_cat():
             elif current_y >= y:
                 direction = -1
 
-            root.geometry(
-                f"120x120+{screen_w - 150}+{current_y}"
-            )
-
+            root.geometry(f"120x120+{screen_w - 150}+{current_y}")
             root.after(40, animate)
 
         animate()
+
+
+    def run_away():
+
+        nonlocal x
+
+        def animate():
+
+            nonlocal x
+
+            x += 12
+
+            if x < screen_w + 150:
+                root.geometry(f"120x120+{x}+{y}")
+                root.after(15, animate)
+            else:
+                root.destroy()
+
+        animate()
+
 
     def move():
 
@@ -164,17 +181,22 @@ def show_cat():
             root.geometry(f"120x120+{x}+{y}")
             root.after(15, move)
         else:
-         bounce()
+            bounce()
+
 
     move()
+
+    root.after(20000, run_away)
+
+
     def open_popup(event=None):
-      root.destroy()
-      show_reminder()
+
+        if root.winfo_exists():
+            root.destroy()
+
+        show_reminder()
+
 
     label.bind("<Button-1>", open_popup)
 
     root.mainloop()
-
-
-if __name__ == "__main__":
-    show_cat()

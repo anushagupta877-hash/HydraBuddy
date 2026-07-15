@@ -76,7 +76,7 @@ def show_reminder():
     # ---------------- CAT IMAGE ---------------- #
 
     current_dir = os.path.dirname(__file__)
-    image_path = os.path.join(current_dir, "..", "assets", "cat.png")
+    image_path = os.path.join(current_dir, "assets", "cat.png")
 
     image = Image.open(image_path)
     image = image.resize((150, 150))

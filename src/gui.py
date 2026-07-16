@@ -1,98 +1,110 @@
+from tkinter import ttk
 import tkinter as tk
 from PIL import Image, ImageTk
 import os
-
-from tracker import drink_water
-
+from tracker import drink_water, get_count, get_goal, reset_today
 
 def show_reminder():
-
     root = tk.Tk()
     root.title("HydraBuddy 💧")
-    root.geometry("380x450")
+    root.geometry("400x610")
     root.configure(bg="#EAF8FF")
     root.resizable(False, False)
 
-    tk.Label(
-        root,
-        text="HydraBuddy 💧",
-        font=("Segoe UI", 24, "bold"),
-        bg="#EAF8FF",
-        fg="#0077B6"
-    ).pack(pady=(15, 5))
+    tk.Label(root,text="HydraBuddy 💧",font=("Segoe UI",24,"bold"),
+             bg="#EAF8FF",fg="#0077B6").pack(pady=(15,5))
 
-    tk.Label(
-        root,
-        text="Time to drink water!",
-        font=("Segoe UI", 13),
-        bg="#EAF8FF",
-        fg="#555555"
-    ).pack()
+    tk.Label(root,text="Time to drink water!",
+             font=("Segoe UI",13),
+             bg="#EAF8FF",fg="#555555").pack()
 
     current_dir = os.path.dirname(__file__)
-    image_path = os.path.join(current_dir, "assets", "cat.png")
+    image_path = os.path.join(current_dir,"assets","cat.png")
 
-    image = Image.open(image_path)
-    image = image.resize((130, 130))
-
+    image = Image.open(image_path).resize((100,100))
     cat = ImageTk.PhotoImage(image)
 
-    tk.Label(
-        root,
-        image=cat,
-        bg="#EAF8FF"
-    ).pack(pady=15)
+    img = tk.Label(root,image=cat,bg="#EAF8FF")
+    img.image = cat
+    img.pack(pady=8)
 
-    message = tk.Label(
-        root,
+    message = tk.Label(root,
         text="💧 Drink one glass of water!",
-        font=("Segoe UI", 14, "bold"),
+        font=("Segoe UI",14,"bold"),
         bg="#EAF8FF",
-        fg="#333333"
-    )
+        fg="#333333")
+    message.pack(pady=5)
 
-    message.pack(pady=10)
+    count_label = tk.Label(
+        root,
+        text=f"Today's Progress: {get_count()} / {get_goal()} glasses",
+        font=("Segoe UI",12,"bold"),
+        bg="#EAF8FF",
+        fg="#0077B6")
+    count_label.pack(pady=5)
+    progress = ttk.Progressbar(
+    root,
+    orient="horizontal",
+    length=250,
+    mode="determinate"
+)
+
+    progress["maximum"] = get_goal()
+    progress["value"] = get_count()
+ 
+    progress.pack(pady=8)
 
     def drank():
-        drink_water()
-        message.config(text="🎉 Great Job! Stay Hydrated.")
+        if get_count() < get_goal():
+          drink_water()
+        count_label.config(
+            text=f"Today's Progress: {get_count()} / {get_goal()} glasses")
+        progress["value"] = get_count()
+        if get_count() >= get_goal():
+         message.config(text="🏆 Daily Goal Completed!")
+        else:
+          message.config(text="🎉 Great Job! Stay Hydrated.")
         root.after(1500, root.destroy)
 
     def later():
         message.config(text="😊 I'll remind you again later.")
         root.after(1500, root.destroy)
 
-    tk.Button(
-        root,
-        text="💧 I Drank Water",
-        command=drank,
-        bg="#4CAF50",
-        fg="white",
-        font=("Segoe UI", 11, "bold"),
-        width=22,
-        height=2
-    ).pack(pady=8)
+    tk.Button(root,text="💧 I Drank Water",command=drank,
+              bg="#4CAF50",fg="white",
+              font=("Segoe UI",11,"bold"),
+              width=24,height=2).pack(pady=8)
+
+    tk.Button(root,text="⏰ Remind Me Later",command=later,
+              bg="#FFB703",fg="black",
+              font=("Segoe UI",11,"bold"),
+              width=20,height=1).pack(pady=8)
 
     tk.Button(
-        root,
-        text="⏰ Remind Me Later",
-        command=later,
-        bg="#FFB703",
-        fg="black",
-        font=("Segoe UI", 11, "bold"),
-        width=22,
-        height=2
-    ).pack()
+    root,
+    text="🔄 Reset Today",
+    command=lambda: (
+        reset_today(),
+        count_label.config(
+            text=f"Today's Progress: {get_count()} / {get_goal()} glasses"
+        ),
+        progress.configure(value=get_count())
+    ),
+    bg="#F44336",
+    fg="white",
+    font=("Segoe UI", 10, "bold"),
+    width=20,
+    height=1
+).pack(pady=5)
 
-    tk.Label(
-        root,
-        text="Made with ❤️ by Anusha & Aanya",
-        font=("Segoe UI", 10),
-        bg="#EAF8FF",
-        fg="gray"
-    ).pack(side="bottom", pady=15)
+    tk.Label(root,
+             text="Made with ❤️ by Anusha & Aanya",
+             font=("Segoe UI",10),
+             bg="#EAF8FF",
+             fg="gray").pack(side="bottom",pady=15)
 
     root.mainloop()
+
 
 
 def show_cat():
@@ -108,19 +120,20 @@ def show_cat():
     image_path = os.path.join(current_dir, "assets", "cat.png")
 
     image = Image.open(image_path)
-    image = image.resize((120, 120))
+    image = image.resize((100, 100))
 
     cat = ImageTk.PhotoImage(image)
 
     label = tk.Label(
-        root,
-        image=cat,
-        bg="white",
-        borderwidth=0
-    )
+    root,
+    bg="white",
+    borderwidth=0
+)
 
+    label.configure(image=cat)
     label.image = cat
     label.pack()
+
     
 
     screen_w = root.winfo_screenwidth()
@@ -191,12 +204,15 @@ def show_cat():
 
     def open_popup(event=None):
 
-        if root.winfo_exists():
-            root.destroy()
+     if root.winfo_exists():
+        root.destroy()
 
-        show_reminder()
-
+     show_reminder()
 
     label.bind("<Button-1>", open_popup)
 
     root.mainloop()
+
+
+if __name__ == "__main__":
+    show_cat()

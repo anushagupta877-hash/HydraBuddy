@@ -1,40 +1,55 @@
 import json
 import os
+from datetime import date
 
-class WaterTracker:
-    def __init__(self, filename="water_data.json"):
-        self.filename = filename
-
-        if os.path.exists(self.filename):
-            with open(self.filename, "r") as file:
-                self.glasses = json.load(file).get("glasses", 0)
-        else:
-            self.glasses = 0
-
-    def add_glass(self):
-        self.glasses += 1
-        self.save()
-
-    def get_count(self):
-        return self.glasses
-
-    def reset(self):
-        self.glasses = 0
-        self.save()
-
-    def save(self):
-        with open(self.filename, "w") as file:
-            json.dump({"glasses": self.glasses}, file)
+DATA_FILE = "water_data.json"
 
 
-# Global tracker object
-tracker = WaterTracker()
+def load_data():
+
+    if not os.path.exists(DATA_FILE):
+        return {
+            "date": str(date.today()),
+            "count": 0,
+            "goal": 8
+        }
+
+    with open(DATA_FILE, "r") as f:
+        data = json.load(f)
+
+    # Reset automatically every new day
+    if data["date"] != str(date.today()):
+        data["date"] = str(date.today())
+        data["count"] = 0
+
+    return data
+
+
+def save_data(data):
+
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f, indent=4)
+
 
 def drink_water():
-    tracker.add_glass()
 
-def get_water_count():
-    return tracker.get_count()
+    data = load_data()
+    data["count"] += 1
+    save_data(data)
 
-def reset_water_count():
-    tracker.reset()
+
+def get_count():
+
+    return load_data()["count"]
+
+
+def get_goal():
+
+    return load_data()["goal"]
+
+
+def reset_today():
+
+    data = load_data()
+    data["count"] = 0
+    save_data(data)
